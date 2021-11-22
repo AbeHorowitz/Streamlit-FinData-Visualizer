@@ -28,19 +28,19 @@ def get_data(symbol, start_date, end_date):
 
 	params = {'ticker': symbol, 'from_datetime': start+'08:30:00', 'until_datetime' : end+'08:30:00', 'agg_mode':'D'}
 
-	pulse_init = requests.get('secret API link', params=params).json()
-	pulse = np.array([])
-	pulse_time = []
+	stat_init = requests.get('secret API link', params=params).json() #in the real code, there is a proprietary, non-publishable statistic here
+	stat = np.array([])
+	stat_time = []
 
 	holidays = createHolidayCalendar('year1')
 
 	for i in pulse_init:
 		for j in i.keys():
 			if isValidTradingDay(j[:10], holidays):
-				pulse_time.append(j)
-				pulse = np.append(pulse, i[j])
+				stat_time.append(j)
+				pulse = np.append(stat, i[j])
 
-	df['Pulse'] = pulse
+	df['Secret Proprietary Statistic'] = stat
 
 	df.reset_index(inplace=True)
 
