@@ -16,15 +16,15 @@ initial = requests.get('Secret Proprietary API Link', params=params).json() # No
 print("Prop Stat JSON:")
 print(initial)
 
-stat = np.array([])
+stat = np.array([]) # stat is the secret statistic
 
 for i in initial:
 	for j in i.values():
-		stat = np.append(pulse, j)
+		stat = np.append(stat, j)
 
 print("Prop Stat Array:")
 print(stat)
 
-df['New Thing'] = pulse
+df['New Thing'] = stat
 
 print(df)
