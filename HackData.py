@@ -11,19 +11,19 @@ print(df)
 
 params = {'ticker':'TSLA', 'from_datetime':'2021:11:11:08:30:00', 'until_datetime':'2021:11:16:08:30:00', 'agg_mode':'D'}
 
-initial = requests.get('http://mars.larium.ai:8002/tweets/get_pulse', params=params).json()
+initial = requests.get('Secret Proprietary API Link', params=params).json() # Non-publishable API link with access to a proprietary statistic developed by my employer
 
-print("Pulse JSON:")
+print("Prop Stat JSON:")
 print(initial)
 
-pulse = np.array([])
+stat = np.array([])
 
 for i in initial:
 	for j in i.values():
-		pulse = np.append(pulse, j)
+		stat = np.append(pulse, j)
 
-print("Pulse Array:")
-print(pulse)
+print("Prop Stat Array:")
+print(stat)
 
 df['New Thing'] = pulse
 
