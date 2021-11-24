@@ -8,7 +8,6 @@ df = pd.read_pickle("TeslaDFActual.pkl")
 time = df.iloc[:,0].values
 close = df.iloc[:,1].values
 volume = df.iloc[:,2].values
-pulse = df.iloc[:,3].values
 
 fig = make_subplots(rows=1, cols=2, subplot_titles=('Daily Volume of TSLA', 'Daily Close of TSLA'))
 
