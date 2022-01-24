@@ -29,8 +29,8 @@ class Visualizer:
 		df.reset_index(inplace=True)
 		return df
 
-	def createPulse(self):
-		pulse_init = self.getPulse()
+	def createStat(self):
+		Stat_init = self.getStat()
 		temp = self.start_date + timedelta(days=-1)
 		df_start_date = temp.strftime('%Y:%m:%d')
 		df_end_date = self.end_date.strftime('%Y:%m:%d')
@@ -41,39 +41,39 @@ class Visualizer:
 		holidays1, holidays2 = self.createHolidayCalendar(year1), None
 		if year1!=year2: holidays2 = createHolidayCalendar(year2)# If necessary, also set up year2 holidays for the second year
 		
-		pulse_init = self.getPulse()
+		pulse_init = self.getStat()
 
-		# For each Pulse datapoint, only append to self.pulse if it's corresponding date is validTradingDay
-		for i in pulse_init:
+		# For each Stat datapoint, only append to self.stat if it's corresponding date is validTradingDay
+		for i in stat_init:
 			for j in i.keys():
 				if j[:4]==year1:
 					if self.isValidTradingDay(j[:10]):
 						pulse_time.append(j)
-						pulse = np.append(pulse, i[j])
+						pulse = np.append(stat, i[j])
 				elif j[:4]==year2:
 					if self.isValidTradingDay(j[:10]):
 						pulse_time.append(j)
 						pulse = np.append(pulse, i[j])
 
-		return pulse, pulse_time
+		return stat, stat_time
 
-	def getPulse(self):
+	def getStat(self):
 		s, e = self.start_date.strftime('%y:%m:%d'), self.end_date.strftime('%y:%m:%d')
 		parameters = {'ticker': self.symbol, 'from_datetime': "20"+s+':08:30:00', 'until_datetime' : "20"+e+':08:30:00', 'agg_mode': 'D'}
-		return(requests.get('http://mars.larium.ai:8002/tweets/get_pulse', params=parameters).json())
+		return(requests.get('Secret Link', params=parameters).json())
 
 # (2) Plots - Two Different Types Available
 
 	def makePlots(self):
 		df = self.getData()
 		time, volume = df.iloc[:,0].values, df.iloc[:,2].values
-		close, pulse = df.iloc[:,1].values, self.createPulse()[0]
+		close, stat = df.iloc[:,1].values, self.createPulse()[0]
 		
 		"""
 		def twoSubplots(time, volume, price, pulse):
 			fig = make_subplots(rows=1, cols=2, subplot_titles=(
 				f'Daily Price of {self.symbol}', 
-				f'Daily Pulse of {self.symbol}'))
+				f'Daily Stat of {self.symbol}'))
 			fig.add_trace(
 				go.Scatter(x=time, y=volume),
 				row=1, col=1)
@@ -85,7 +85,7 @@ class Visualizer:
 			fig['layout']['xaxis']['title']='Time'
 			fig['layout']['xaxis2']['title']='Time'
 			fig['layout']['yaxis']['title']='Daily Volume'
-			fig['layout']['yaxis2']['title']='Daily Pulse'
+			fig['layout']['yaxis2']['title']='Daily Stat'
 
 		return fig
 		"""
@@ -105,7 +105,7 @@ class Visualizer:
 
 		# Add figure title
 		fig.update_layout(
-			title_text="Volume vs. Pulse"
+			title_text="Volume vs. Stat"
 		)
 		# Set x-axis title
 		fig.update_xaxes(title_text="Time")
