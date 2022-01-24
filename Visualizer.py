@@ -36,24 +36,24 @@ class Visualizer:
 		df_end_date = self.end_date.strftime('%Y:%m:%d')
 		year1, year2 = df_start_date[:4], df_end_date[:4]
 		
-		# Match up pulse data indices with DataFrame date indices
-		pulse, pulse_time = np.array([]), []
+		# Match up stat data indices with DataFrame date indices
+		stat, stat_time = np.array([]), []
 		holidays1, holidays2 = self.createHolidayCalendar(year1), None
 		if year1!=year2: holidays2 = createHolidayCalendar(year2)# If necessary, also set up year2 holidays for the second year
 		
-		pulse_init = self.getStat()
+		stat_init = self.getStat()
 
 		# For each Stat datapoint, only append to self.stat if it's corresponding date is validTradingDay
 		for i in stat_init:
 			for j in i.keys():
 				if j[:4]==year1:
 					if self.isValidTradingDay(j[:10]):
-						pulse_time.append(j)
-						pulse = np.append(stat, i[j])
+						stat_time.append(j)
+						stat = np.append(stat, i[j])
 				elif j[:4]==year2:
 					if self.isValidTradingDay(j[:10]):
-						pulse_time.append(j)
-						pulse = np.append(pulse, i[j])
+						stat_time.append(j)
+						stat = np.append(stat, i[j])
 
 		return stat, stat_time
 
@@ -67,10 +67,10 @@ class Visualizer:
 	def makePlots(self):
 		df = self.getData()
 		time, volume = df.iloc[:,0].values, df.iloc[:,2].values
-		close, stat = df.iloc[:,1].values, self.createPulse()[0]
+		close, stat = df.iloc[:,1].values, self.createStat()[0]
 		
 		"""
-		def twoSubplots(time, volume, price, pulse):
+		def twoSubplots(time, volume, price, stat):
 			fig = make_subplots(rows=1, cols=2, subplot_titles=(
 				f'Daily Price of {self.symbol}', 
 				f'Daily Stat of {self.symbol}'))
@@ -79,7 +79,7 @@ class Visualizer:
 				row=1, col=1)
 
 			fig.add_trace(
-				go.Scatter(x=time, y=pulse),
+				go.Scatter(x=time, y=stat),
 				row=1, col=2)
 
 			fig['layout']['xaxis']['title']='Time'
@@ -90,7 +90,7 @@ class Visualizer:
 		return fig
 		"""
 	
-		# def secondaryY(time, volume, price, pulse):
+		# def secondaryY(time, volume, price, stat):
 		fig = make_subplots(specs=[[{"secondary_y": True}]])
 
 		fig.add_trace(
@@ -99,7 +99,7 @@ class Visualizer:
 		)
 
 		fig.add_trace(
-			go.Scatter(x=time, y=pulse, name="Pulse"),
+			go.Scatter(x=time, y=pulse, name="Stat"),
 			secondary_y=True,
 		)
 
@@ -112,11 +112,11 @@ class Visualizer:
 
 		# Set y-axes titles
 		fig.update_yaxes(title_text="Volume", secondary_y=False)
-		fig.update_yaxes(title_text="Pulse Data", secondary_y=True)
+		fig.update_yaxes(title_text="Stat Data", secondary_y=True)
 		
 		st.plotly_chart(fig)
 		st.caption("https://iexcloud.io Data provided by IEX Cloud")
-		st.write("Pearson Correlation between variables: " + str(np.corrcoef(pulse, volume)[1]))
+		st.write("Pearson Correlation between variables: " + str(np.corrcoef(stat, volume)[1]))
 
 	
 	# (3) RUN
@@ -139,7 +139,7 @@ class Visualizer:
 	# (4) UTILITY METHODS
 	
 	"""
-	Next Two Methods (A) & (B) : Convert OG date to date good for pulse API/Streamlit.date_input returns a date in ISO 8601 
+	Next Two Methods (A) & (B) : Convert OG date to date good for stat API/Streamlit.date_input returns a date in ISO 8601 
 	format of year-month-day such as 2021-11-02, but it is a datetime object
 	"""
 	def isoToAPI(self, isodate):
@@ -161,7 +161,7 @@ class Visualizer:
 		else:
 			return True
 
-# (D) Create list of trading holidays in US, to filter out datapoints from pulse API
+# (D) Create list of trading holidays in US, to filter out datapoints from stat API
 	def createHolidayCalendar(self, year):
 		us_holidays = holidays.US(years=int(year))
 		us_holidays.pop_named('Veterans Day')
